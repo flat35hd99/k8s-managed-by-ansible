@@ -1,0 +1,28 @@
+- hosts: k8s-control-plane
+  become: yes
+  gather_facts: no
+  tasks:
+    # https://stackoverflow.com/questions/51126164/how-do-i-find-the-join-command-for-kubeadm-on-the-master
+    - name: Get hash
+      shell: |
+          openssl x509 -pubkey -in /etc/kubernetes/pki/ca.crt \
+            | openssl rsa -pubin -outform der 2>/dev/null \
+            | openssl dgst -sha256 -hex \
+            | sed i's/^.* //'
+      register: k8s_checkhash_to_join
+    - name: Get token
+      shell: kubeadm token list | awk '{print $1}' | grep -v "TOKEN"
+      register: k8s_token_to_join
+        
+- hosts: k8s-worker
+  become: yes
+  gather_facts: no
+  tasks:
+    - name: Check if the worker join the cluster
+      stat:
+        path: /etc/kubernetes/kubelet.conf
+      register: joining_if_exists_is_true
+    - name: Join the cluster
+      debug:
+        msg: "Run join command here"
+      when: joining_if_exists_is_true.stat.exists != true

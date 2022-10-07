@@ -1,0 +1,6 @@
+---
+packages_k8s:
+  - kubelet
+  - kubeadm
+  - kubectl
+  - iproute-tc

@@ -1,0 +1,62 @@
+- hosts: k8s-cluster
+  become: yes
+  gather_facts: no
+  vars_files:
+    - vars/packages-docker.yml
+    - vars/packages-k8s.yml
+  tasks:
+    - name: Ensure docker repo added
+      ansible.builtin.yum_repository:
+        name: docker
+        description: docker repository
+        baseurl: "https://download.docker.com/linux/centos/8/x86_64/stable/"
+        gpgkey: "https://download.docker.com/linux/centos/gpg"
+    
+    - name: Ensure k8s repo added
+      ansible.builtin.yum_repository:
+        name: kubernetes
+        description: Kubernetes repository
+        baseurl: https://packages.cloud.google.com/yum/repos/kubernetes-el7-$basearch
+        gpgkey: https://packages.cloud.google.com/yum/doc/rpm-package-key.gpg
+        exclude:
+          - kubelet
+          - kubeadm
+          - kubectl
+    
+    - name: Ensure k8s packages installed
+      dnf:
+        name: "{{ item }}"
+        state: installed
+        disable_excludes: kubernetes
+      loop: "{{ packages_k8s }}"
+
+    - name: Ensure docker engine packages installed
+      dnf:
+        name: "{{ item }}"
+        state: installed
+      loop: "{{ packages_docker }}"
+
+    - name: Ensure 6443/tcp and 10250/tcp ports allowed to use k8s cluster communication
+      ansible.posix.firewalld:
+        port: "{{ item }}"
+        permanent: yes
+        immediate: yes
+        state: enabled
+      loop:
+        - 6443/tcp
+        - 10250/tcp
+
+    - name: Ensure SELinux in permissive mode
+      ansible.posix.selinux:
+        policy: targeted
+        state: permissive
+
+    - name: Ensure kubelet service enabled
+      ansible.builtin.systemd:
+        name: kubelet
+        state: started
+    
+    - name: Ensure containerd service enabled
+      ansible.builtin.systemd:
+        name: containerd
+        state: started

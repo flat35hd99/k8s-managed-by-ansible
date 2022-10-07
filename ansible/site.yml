@@ -56,6 +56,15 @@
         name: kubelet
         state: started
     
+    - name: Ensure containerd config.toml located
+      ansible.builtin.template:
+        src: templates/containerd_config.toml.j2
+        dest: /etc/containerd/config.toml
+        owner: root
+        group: root
+        mode: '0640'
+
+    
     - name: Ensure containerd service enabled
       ansible.builtin.systemd:
         name: containerd

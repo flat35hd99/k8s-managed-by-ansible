@@ -2,6 +2,7 @@
   stat:
     path: /etc/kubernetes/kubelet.conf
   register: joining_if_exists_is_true
+
 # Note:
 # This playbook requires that
 # k8s-control-plane group should be one host named k8s0.

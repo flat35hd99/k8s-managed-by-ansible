@@ -1,2 +1,4 @@
 include:
   - "**/*.yaml"
+formatter:
+  retain_line_breaks: true

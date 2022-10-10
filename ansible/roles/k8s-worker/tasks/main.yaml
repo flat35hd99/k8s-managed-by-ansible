@@ -2,7 +2,6 @@
   stat:
     path: /etc/kubernetes/kubelet.conf
   register: joining_if_exists_is_true
-
 - name: Join the cluster
   shell: "{{ hostvars['k8s0']['join_command']['stdout'] }}"
   when: joining_if_exists_is_true.stat.exists != true

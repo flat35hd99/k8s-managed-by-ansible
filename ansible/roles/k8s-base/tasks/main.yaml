@@ -4,7 +4,6 @@
     description: docker repository
     baseurl: "https://download.docker.com/linux/centos/8/x86_64/stable/"
     gpgkey: "https://download.docker.com/linux/centos/gpg"
-
 - name: Ensure k8s repo added
   ansible.builtin.yum_repository:
     name: kubernetes
@@ -15,20 +14,17 @@
       - kubelet
       - kubeadm
       - kubectl
-
 - name: Ensure k8s packages installed
   dnf:
     name: "{{ item }}"
     state: installed
     disable_excludes: kubernetes
   loop: "{{ packages_k8s }}"
-
 - name: Ensure docker engine packages installed
   dnf:
     name: "{{ item }}"
     state: installed
   loop: "{{ packages_docker }}"
-
 - name: Ensure 6443/tcp and 10250/tcp ports allowed to use k8s cluster communication
   ansible.posix.firewalld:
     port: "{{ item }}"
@@ -38,12 +34,10 @@
   loop:
     - 6443/tcp
     - 10250/tcp
-
 - name: Ensure br_netfilter enabled
   community.general.modprobe:
     name: br_netfilter
     state: present
-
 - name: Ensure ip forwarding and bridge-nf-call-iptables enabled
   ansible.posix.sysctl:
     name: "{{ item }}"
@@ -55,43 +49,36 @@
     - net.bridge.bridge-nf-call-iptables
     - net.bridge.bridge-nf-call-arptables
     - net.bridge.bridge-nf-call-ip6tables
-
 - name: Ensure SELinux in permissive mode
   ansible.posix.selinux:
     policy: targeted
     state: permissive
-
 # Swap refer https://zaki-hmkc.hatenablog.com/entry/2020/04/12/224759
 - name: get swap state
   shell: swapon -v
   register: swap_state
   check_mode: false
   changed_when: false
-
 - name: swap off
   shell: swapoff -a
   when: swap_state.stdout != ''
-
 - name: swap check (/etc/fstab)
   shell: grep -v "\s*#" /etc/fstab | awk '{print $2}' | grep swap -c | grep "\s*"
   register: swap_state_in_fstab
   check_mode: false
   changed_when: false
   ignore_errors: yes
-
 - name: disable swap (/etc/fstab)
   replace:
     path: /etc/fstab
     regexp: ([^\s]+\s+swap\s+.*)
     replace: '# \1'
-  when: swap_state_in_fstab.stdout != '0' 
-
+  when: swap_state_in_fstab.stdout != '0'
 - name: Ensure kubelet service enabled
   ansible.builtin.systemd:
     name: kubelet
     enabled: yes
     state: started
-
 - name: Ensure containerd config.toml located
   ansible.builtin.template:
     src: templates/containerd_config.toml.j2
@@ -99,7 +86,6 @@
     owner: root
     group: root
     mode: '0644'
-
 - name: Ensure containerd service enabled
   ansible.builtin.systemd:
     name: containerd

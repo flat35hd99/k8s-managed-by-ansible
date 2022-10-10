@@ -2,11 +2,9 @@
   stat:
     path: /etc/kubernetes/kubelet.conf
   register: has_been_initilized
-
 - name: Initilize control plane
   shell: kubeadm init
   when: has_been_initilized.stat.exists != true
-
 # Note:
 # This playbook requires that
 # k8s-control-plane group should be one host named k8s0.

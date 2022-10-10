@@ -2,7 +2,7 @@ name: Format yaml files
 on:
   push:
   pull_request:
-envs:
+env:
   YAMLFMT_VERSION: "0.5.0"
 jobs:
   format-yaml:

@@ -1,0 +1,18 @@
+name: Format yaml files
+on:
+  push:
+  pull_request:
+envs:
+  YAMLFMT_VERSION: "0.5.0"
+jobs:
+  format-yaml:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Setup yamlfmt
+        run: |
+          wget "https://github.com/google/yamlfmt/releases/download/v${YAMLFMT_VERSION}/yamlfmt_${YAMLFMT_VERSION}_Linux_x86_64.tar.gz"
+          tar -xvf yamlfmt_${YAMLFMT_VERSION}_Linux_x86_64.tar.gz
+          echo $(pwd)/bin >> $GITHUB_PATH
+      - name: Run format
+        run: yamlfmt

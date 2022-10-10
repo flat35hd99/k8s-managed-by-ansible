@@ -1,0 +1,11 @@
+- hosts: k8s-cluster
+  become: yes
+  gather_facts: no
+  tasks:
+    - name: Check if the control plane has been initilized
+      stat:
+        path: /etc/kubernetes/kubelet.conf
+      register: has_been_initilized
+  
+    - name: Initilize control plane
+      shell: kubeadm init

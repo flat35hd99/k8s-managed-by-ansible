@@ -6,7 +6,6 @@ all:
         k8s0: # Control plane host should be "k8s0"
           ansible_host: 10.0.2.2
           ansible_ssh_private_key_file: ~/.ssh/k8s_rsa
-
     k8s-worker:
       hosts:
         k8s1:
@@ -18,7 +17,6 @@ all:
         k8s3:
           ansible_host: 10.0.2.5
           ansible_ssh_private_key_file: ~/.ssh/k8s_rsa
-
     k8s-cluster:
       children:
         k8s-worker:

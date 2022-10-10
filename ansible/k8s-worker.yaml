@@ -1,4 +1,3 @@
----
 - hosts: k8s-worker
   become: yes
   gather_facts: no

@@ -1,0 +1,20 @@
+- name: Check if the control plane has been initilized
+  stat:
+    path: /etc/kubernetes/kubelet.conf
+  register: has_been_initilized
+
+- name: Initilize control plane
+  shell: kubeadm init
+  when: has_been_initilized.stat.exists != true
+
+# Note:
+# This playbook requires that
+# k8s-control-plane group should be one host named k8s0.
+# To join the cluster, this playbook use `kubeadm token create --print-join-command`.
+# To address the output from other hosts, Ansible require host specifying
+# instead of group specifying
+
+# https://stackoverflow.com/questions/51126164/how-do-i-find-the-join-command-for-kubeadm-on-the-master
+- name: Get join command
+  shell: kubeadm token create --print-join-command
+  register: join_command

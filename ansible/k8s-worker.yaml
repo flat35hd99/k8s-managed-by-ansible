@@ -1,0 +1,7 @@
+---
+- hosts: k8s-worker
+  become: yes
+  gather_facts: no
+  roles:
+    - k8s-base
+    - k8s-worker

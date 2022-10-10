@@ -4,3 +4,9 @@ packages_docker:
  - docker-ce-cli
  - containerd.io
  - docker-compose-plugin
+
+packages_k8s:
+  - kubelet
+  - kubeadm
+  - kubectl
+  - iproute-tc

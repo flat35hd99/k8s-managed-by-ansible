@@ -1,4 +1,4 @@
-name: Format yaml files
+name: Lint + Format yaml files
 on:
   push:
   pull_request:
@@ -14,5 +14,5 @@ jobs:
           wget "https://github.com/google/yamlfmt/releases/download/v${YAMLFMT_VERSION}/yamlfmt_${YAMLFMT_VERSION}_Linux_x86_64.tar.gz"
           tar -xvf yamlfmt_${YAMLFMT_VERSION}_Linux_x86_64.tar.gz
           echo $(pwd) >> $GITHUB_PATH
-      - name: Run format
-        run: yamlfmt
+      - name: Run lint
+        run: yamlfmt -lint

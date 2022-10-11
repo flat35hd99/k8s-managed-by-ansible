@@ -7,6 +7,21 @@
   shell: kubeadm init
   when: has_been_initilized.stat.exists != true
 
+- name: Create .kube directory
+  file:
+    path: /home/k8s/.kube
+    state: directory
+    mode: '0755'
+
+- name: Copy /etc/kubernetes/admin.conf to home directory
+  copy:
+    remote_src: yes
+    src: /etc/kubernetes/admin.conf
+    dest: /home/k8s/.kube/config
+    owner: k8s
+    group: k8s
+    mode: '0644'
+
 - name: Get join command
   shell: kubeadm token create --print-join-command
   register: join_command
